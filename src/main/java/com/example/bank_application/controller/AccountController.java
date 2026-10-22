@@ -4,7 +4,6 @@ import com.example.bank_application.dto.AccountResponse;
 import com.example.bank_application.dto.CreateAccountRequest;
 import com.example.bank_application.dto.TransactionResponse;
 import com.example.bank_application.model.Account;
-//import com.example.bank_application.service.AccountService;
 import com.example.bank_application.model.Transaction;
 import com.example.bank_application.service.AccountService;
 import org.springframework.http.HttpStatus;
@@ -55,15 +54,11 @@ public class AccountController {
     }
 
     private TransactionResponse toTransactionResponse(Transaction transaction) {
-        BigDecimal amount = transaction.getAmount() == null
-                ? null
-                : BigDecimal.valueOf(transaction.getAmount());
-
-        return TransactionResponse.builder()
+                return TransactionResponse.builder()
                 .id(transaction.getId())
                 .accountId(transaction.getAccount().getId())
                 .type(transaction.getType())
-                .amount(amount)
+                .amount(transaction.getAmount())
                 .createdAt(transaction.getCreatedAt())
                 .note(transaction.getNote())
                 .build();
