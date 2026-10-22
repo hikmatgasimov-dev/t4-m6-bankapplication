@@ -6,9 +6,10 @@ import com.example.bank_application.dto.TransactionResponse;
 import com.example.bank_application.model.Account;
 //import com.example.bank_application.service.AccountService;
 import com.example.bank_application.model.Transaction;
+import com.example.bank_application.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,25 +34,18 @@ public class AccountController {
 
     @GetMapping("/{id}")
     public AccountResponse getAccount(@PathVariable Long id) {
-        return toAccountResponse(getAccountOrThrow(id));
+        return toAccountResponse(accountService.getAccountById(id));
     }
 
     @GetMapping("/{id}/transactions")
     public List<TransactionResponse> getTransactions(@PathVariable Long id) {
-        getAccountOrThrow(id);
-
+        accountService.getAccountById(id);
         return accountService.findTransactionsByAccountId(id).stream()
                 .map(this::toTransactionResponse)
                 .toList();
     }
 
-    private Account getAccountOrThrow(Long id) {
-        return accountService.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Account not found: " + id));
-    }
-
-    private AccountResponse toAccountResponse(Account account) {
+      private AccountResponse toAccountResponse(Account account) {
         return AccountResponse.builder()
                 .id(account.getId())
                 .iban(account.getIban())
