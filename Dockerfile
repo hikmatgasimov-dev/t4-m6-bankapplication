@@ -1,10 +1,4 @@
 FROM eclipse-temurin:21-jre
-
-WORKDIR /app
-
-ARG JAR_FILE=target/*.jar
+ARG JAR_FILE
 COPY ${JAR_FILE} app.jar
-
-EXPOSE 3400
-
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app.jar"]

@@ -8,7 +8,7 @@ on:
       container_name:
         description: 'Docker container name'
         required: false
-        default: 'acn-bootcamp-app'
+        default: 'acn-bootcamp-team-2'
       server_port:
         description: 'Application port'
         required: false
@@ -19,15 +19,18 @@ on:
         default: '5'
 
 concurrency:
-  group: deploy-${{ github.ref_name }}
+  group: deploy-team-2
   cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: DemoBankingApplication
     env:
-      APP_CONTAINER_NAME: ${{ github.event.inputs.container_name || 'acn-bootcamp-app' }}
-      APP_IMAGE_NAME: acn-bootcamp-app
+      APP_CONTAINER_NAME: ${{ github.event.inputs.container_name || 'acn-bootcamp-team-2' }}
+      APP_IMAGE_NAME: acn-bootcamp-team-2
     
     steps:
     - name: Checkout code
@@ -36,16 +39,18 @@ jobs:
         fetch-depth: 0
 
     - name: Set up JDK 21
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
+        cache-dependency-path: DemoBankingApplication/pom.xml
 
-    - name: Set up Maven
-      uses: stCarolas/setup-maven@v5
-      with:
-        maven-version: '3.9.6'
+    - name: Make mvnw executable
+      run: chmod +x mvnw
+
+    - name: Build with Maven
+      run: ./mvnw clean package -DskipTests
 
     - name: Extract deployment information
       id: deployment-info
@@ -70,9 +75,6 @@ jobs:
         echo "  Commit: $COMMIT"
         echo "  Timestamp: $TIMESTAMP"
         echo "  Port: $PORT_INPUT"
-
-    - name: Build with Maven
-      run: mvn clean package -DskipTests
 
     - name: Resolve build artifact
       id: build-artifact
@@ -139,7 +141,7 @@ jobs:
             exit 1
           fi
 
-          if docker logs $APP_CONTAINER_NAME 2>&1 | grep -q "Started Application in"; then
+          if docker logs $APP_CONTAINER_NAME 2>&1 | grep -q "Started DemoBankingApplication in"; then
             echo "Application container is running and Spring Boot has started"
             docker ps --filter "name=$APP_CONTAINER_NAME"
             exit 0
