@@ -17,7 +17,6 @@ import java.util.List;
 public class TransferService {
 
     private final AccountService accountService;
-    private final List<Transaction> transactions = new ArrayList<>();
 
     public synchronized Transaction transfer(TransferRequest request) {
         BigDecimal amount = request.getAmount();
@@ -47,7 +46,7 @@ public class TransferService {
         LocalDateTime now = LocalDateTime.now();
 
         Transaction debit = new Transaction(
-                (long) transactions.size() + 1,
+                (long) accountService.getTransactions().size() + 1,
                 fromAccount,
                 TransactionType.TRANSFER_OUT,
                 amount,
@@ -55,11 +54,10 @@ public class TransferService {
                 "Transfer to " + toAccount.getIban()
         );
 
-        transactions.add(debit);
-
+        accountService.addTransaction(debit);
 
         Transaction credit = new Transaction(
-                (long) transactions.size() + 1,
+                (long) accountService.getTransactions().size() + 1,
                 toAccount,
                 TransactionType.TRANSFER_IN,
                 amount,
@@ -67,13 +65,8 @@ public class TransferService {
                 "Transfer from " + fromAccount.getIban()
         );
 
-        transactions.add(credit);
-        return  debit;
-    }
+        accountService.addTransaction(credit);
 
-    public List<Transaction> getTransactionsByAccountId(Long accountId){
-        return transactions.stream()
-                .filter(t -> t.getAccount().getId().equals(accountId))
-                .toList();
+        return  debit;
     }
 }
