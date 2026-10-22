@@ -12,7 +12,7 @@ on:
       server_port:
         description: 'Application port'
         required: false
-        default: '3100'
+        default: '3400'
       startup_sleep_seconds:
         description: 'Seconds to wait after starting the container'
         required: false
