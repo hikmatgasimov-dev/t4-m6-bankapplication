@@ -20,7 +20,7 @@ public class TransactionResponse {
     private Long id;
     private Long accountId;
     private TransactionType type;
-    private Long amount;
+    private BigDecimal amount;
     private LocalDateTime createdAt;
     private String note;
 }
