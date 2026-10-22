@@ -5,6 +5,7 @@ import com.example.bank_application.dto.TransferRequest;
 import com.example.bank_application.model.Transaction;
 import com.example.bank_application.service.AccountService;
 import com.example.bank_application.service.TransferService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<TransactionResponse> createTransaction(@RequestBody TransferRequest request) {
+    public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody TransferRequest request) {
 
 
         Transaction transaction = (transferService.transfer(request));
