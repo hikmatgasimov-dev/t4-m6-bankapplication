@@ -19,7 +19,7 @@ public class TransferService {
     private final AccountService accountService;
     private final List<Transaction> transactions = new ArrayList<>();
 
-    public void transfer(TransferRequest request) {
+    public synchronized Transaction transfer(TransferRequest request) {
         BigDecimal amount = request.getAmount();
 
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -34,7 +34,7 @@ public class TransferService {
             throw new IllegalArgumentException("Cannot transfer to the same account");
         }
 
-        Account fromAccount = accountService.getAccountById(request.getToAccountId());
+        Account fromAccount = accountService.getAccountById(request.getFromAccountId());
         Account toAccount = accountService.getAccountById(request.getToAccountId());
 
         if(fromAccount.getBalance().compareTo(amount) < 0) {
@@ -64,10 +64,11 @@ public class TransferService {
                 TransactionType.TRANSFER_IN,
                 amount,
                 now,
-                "Transfer from " + toAccount.getIban()
+                "Transfer from " + fromAccount.getIban()
         );
 
         transactions.add(credit);
+        return  debit;
     }
 
     public List<Transaction> getTransactionsByAccountId(Long accountId){
@@ -75,5 +76,4 @@ public class TransferService {
                 .filter(t -> t.getAccount().getId().equals(accountId))
                 .toList();
     }
-
 }
