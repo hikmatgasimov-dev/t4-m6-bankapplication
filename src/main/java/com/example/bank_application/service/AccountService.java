@@ -2,6 +2,7 @@ package com.example.bank_application.service;
 
 import com.example.bank_application.dto.CreateAccountRequest;
 import com.example.bank_application.model.Account;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,6 +20,7 @@ public class AccountService {
 
     private final Map<Long, Account> accounts = new ConcurrentHashMap<>();
     private final AtomicLong nextId = new AtomicLong(1);
+    @Getter
     private final List<Transaction> transactions = new CopyOnWriteArrayList<>();
 
     public Account createAccount(CreateAccountRequest request) {
